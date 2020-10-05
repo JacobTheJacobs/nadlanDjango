@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from listings.choices import city_choices, bedrooms_choices, price_choices
 
 from .models import Listing
 
@@ -13,7 +14,8 @@ def index(request):
     paged_listings = pagiantor.get_page(page)
 
     context = {
-        'listings': paged_listings
+        'listings': paged_listings,
+
     }
 
     return render(request, 'listings/listings.html', context)
@@ -42,11 +44,6 @@ def search(request):
         if city:
             query_list = query_list.filter(city__iexact=city)
 
-    if 'state' in request.GET:
-        state = request.GET['state']
-        if state:
-            query_list = query_list.filter(state__iexact=state)
-
     if 'bedrooms' in request.GET:
         bedrooms = request.GET['bedrooms']
         if bedrooms:
@@ -58,7 +55,11 @@ def search(request):
             query_list = query_list.filter(price__lte=price)
 
     context = {
-        'listings': query_list
+        'listings': query_list,
+        'city_choices': city_choices,
+        'bedrooms_choices': bedrooms_choices,
+        'price_choices': price_choices,
+        'values': request.GET
     }
 
     return render(request, 'listings/search.html', context)
