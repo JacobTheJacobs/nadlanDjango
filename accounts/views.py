@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages,auth
+from django.contrib import messages, auth
 from django.contrib.auth.models import User
+from contacts.models import Contact
 
 
 def register(request):
@@ -23,19 +24,19 @@ def register(request):
                     messages.error(request, 'מייל כבר קיים')
                     return redirect('register')
                 else:
-                    #create user
+                    # create user
                     user = User.objects.create_user(username=username,
                                                     password=password,
                                                     email=email,
                                                     first_name=first_name,
                                                     last_name=last_name)
                     # login after register
-                    #auth.login(request,user)
-                    #messages.success(request,'ברוך הבאה')
-                    #redirect('/')
+                    # auth.login(request,user)
+                    # messages.success(request,'ברוך הבאה')
+                    # redirect('/')
                     # redirect to login
                     user.save();
-                    messages.success(request,'You are now registered and can log in')
+                    messages.success(request, 'You are now registered and can log in')
                     return redirect('login')
         else:
             messages.error(request, 'סיסמאות לא תואמות')
@@ -49,13 +50,13 @@ def login(request):
         username = request.POST['username']
         password = request.POST['password']
 
-        user = auth.authenticate(username=username,password=password)
+        user = auth.authenticate(username=username, password=password)
         if user is not None:
-            auth.login(request,user)
-            messages.success(request,'ברוך הבאה')
+            auth.login(request, user)
+            messages.success(request, 'ברוך הבאה')
             return redirect('dashboard')
         else:
-            messages.error(request,'פרטים שגוים')
+            messages.error(request, 'פרטים שגוים')
             return redirect('login')
     else:
         return render(request, 'accounts/login.html')
@@ -64,9 +65,14 @@ def login(request):
 def logout(request):
     if request.method == 'POST':
         auth.logout(request)
-        messages.success(request,'מקקוים שתחזרו בקרוב')
+        messages.success(request, 'מקקוים שתחזרו בקרוב')
         return redirect('index')
 
 
 def dashboard(request):
-    return render(request, 'accounts/dashboard.html')
+    user_contacts = Contact.objects.order_by('-contact_date').filter(user_id=request.user.id)
+
+    context = {
+        'contacts': user_contacts
+    }
+    return render(request, 'accounts/dashboard.html', context)
