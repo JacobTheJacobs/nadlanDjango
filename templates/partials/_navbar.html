@@ -17,7 +17,7 @@
              class="nav-item mr-3"
           {% endif %}
           >
-            <a class="nav-link" href="{% url 'index' %}">Home</a>
+            <a class="nav-link" href="{% url 'index' %}">בית</a>
           </li>
           <li
           {% if 'about' in request.path %}
@@ -26,28 +26,62 @@
              class="nav-item mr-3"
           {% endif %}
           >
-            <a class="nav-link" href="{% url 'about' %}">About</a>
+            <a class="nav-link" href="{% url 'about' %}">מידע</a>
           </li>
           <li {% if 'listings' in request.path %}
              class="nav-item active mr-3"
           {% else %}
              class="nav-item mr-3"
           {% endif %}>
-            <a class="nav-link" href="{% url 'listings' %}">Featured Listings</a>
+            <a class="nav-link" href="{% url 'listings' %}">נדל"ן</a>
           </li>
         </ul>
 
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item mr-3">
-            <a class="nav-link" href="register.html">
-              <i class="fas fa-user-plus"></i> Register</a>
-          </li>
-          <li class="nav-item mr-3">
-            <a class="nav-link" href="login.html">
-              <i class="fas fa-sign-in-alt"></i>
+        {% if user.is_authenticated %}
 
-              Login</a>
-          </li>
+               <li
+              {% if 'dashboard' in request.path %}
+                 class="nav-item active mr-3"
+              {% else %}
+                 class="nav-item mr-3"
+              {% endif %}>
+                <a class="nav-link" href="{% url 'dashboard' %}">
+                    ({{ user.username }})
+              אזור אישי</a>
+              </li>
+            <li class="nav-item mr-3">
+            <a href="javascript:{document.getElementById('logout').submit()}"
+               class="nav-link">
+                <i class="fas fa-sign-out-alt"></i>יציאה
+            </a>
+            <form action="{%  url 'logout' %}" method="POST" id="logout">
+                {% csrf_token %}
+                    <input type="hidden">
+                </form>
+            </li>
+
+        {% else %}
+
+              <li     {% if '/accounts/register' == request.path %}
+                 class="nav-item active mr-3"
+              {% else %}
+                 class="nav-item mr-3"
+              {% endif %}>
+                <a class="nav-link" href="{% url 'register' %}">
+                  <i class="fas fa-user-plus"></i> הרשמה</a>
+              </li>
+              <li     {% if '/accounts/login' == request.path %}
+                 class="nav-item active mr-3"
+              {% else %}
+                 class="nav-item mr-3"
+              {% endif %}>
+                <a class="nav-link" href="{% url 'login' %}">
+                  <i class="fas fa-sign-in-alt"></i>
+
+                  כניסה</a>
+              </li>
+        {% endif %}
         </ul>
       </div>
     </div>
